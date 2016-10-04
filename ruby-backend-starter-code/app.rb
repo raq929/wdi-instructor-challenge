@@ -1,8 +1,16 @@
 require 'sinatra'
+require 'net/http'
 
 class MovieApp < Sinatra::Base
   get '/' do
-    File.read('./views/index.html')
+    title = params[:title]
+    year = params[:year]
+    unless title || year
+      return File.read('./views/index.html')
+    end
+
+    url = URI("http://www.omdbapi.com/?t=#{title}&y=#{year}&plot=short&r=json")
+    Net::HTTP.get(url)
   end
 
   get '/favorites' do
