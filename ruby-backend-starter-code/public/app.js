@@ -1,3 +1,27 @@
+var searchData;
+
+var handleMovieClick = function handleMovieClick(event) {
+  event.preventDefault()
+  table = "<table>" +
+      "<tr>" +
+      "<td>Rating</td>" +
+      "<td>" + searchData.Rated + "</td>" +
+      "</tr>" +
+      "<tr>" +
+      "<td>Runtime</td>" +
+      "<td>" + searchData.Runtime + "</td>" +
+      "</tr>" +
+      "<tr>" +
+      "<td>Director</td>" +
+      "<td>" + searchData.Director + "</td>" +
+      "</tr>" +
+      "<tr>" +
+      "<td>Plot Summary</td>" +
+      "<td>" + searchData.Plot + "</td>" +
+      "</tr>" +
+      "</table>"
+    $('#moreInfo').html(table);
+}
 
 var handleSearch = function handleSearch(event) {
   event.preventDefault();
@@ -7,13 +31,14 @@ var handleSearch = function handleSearch(event) {
   var result = ""
 
   request.done(function(data) {
-    console.log(data);
     if(data.Response === "False") {
       result = "Your movie could not be found."
     } else {
+      searchData = data
       result = data.Title + "  " + data.Year
     }
     $('#result').html(result);
+    $('#result').on('click', handleMovieClick)
   }).fail(function(error) {
     console.log(error)
     result = "There was an error contacting the server."
