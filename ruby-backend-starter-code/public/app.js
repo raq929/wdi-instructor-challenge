@@ -1,4 +1,13 @@
 var searchData;
+var favoritesList = []
+
+var isFavorite = function isFavorite(movie) {
+  return favoritesList.some(function(favorite) {
+    console.log(favorite.Title)
+    return favorite.Title === movie.Title &&
+      favorite.Year === movie.Year
+  })
+}
 
 var handleMovieClick = function handleMovieClick(event) {
   event.preventDefault()
@@ -30,12 +39,16 @@ var handleSearch = function handleSearch(event) {
   var request = jQuery.get("http://www.omdbapi.com/?" + fullQuery)
   var result = ""
 
-  request.done(function(data) {
-    if(data.Response === "False") {
+  request.done(function(movieData) {
+    if(movieData.Response === "False") {
       result = "Your movie could not be found."
     } else {
-      searchData = data
-      result = data.Title + "  " + data.Year
+      searchData = movieData
+      if (isFavorite(movieData)) {
+        result = movieData.Title + "  " + movieData.Year + " <a>UnFavorite</a>"
+      } else {
+        result = movieData.Title + "  " + movieData.Year + " <a>Favorite</a>"
+      }
     }
     $('#result').html(result);
     $('#result').on('click', handleMovieClick)
