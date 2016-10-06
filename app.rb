@@ -4,14 +4,7 @@ require 'json'
 
 class MovieApp < Sinatra::Base
   get '/' do
-    title = params[:title]
-    year = params[:year]
-    unless title || year
-      return File.read('./views/index.html')
-    end
-
-    url = URI("http://www.omdbapi.com/?t=#{title}&y=#{year}&plot=short&r=json")
-    Net::HTTP.get(url)
+    return File.read('./views/index.html')
   end
 
   get '/favorites' do
