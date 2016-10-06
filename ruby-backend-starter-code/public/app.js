@@ -99,6 +99,17 @@ $(document).ready(function(){
   })
   $('#favorites').on('click', function(e) {
     e.preventDefault();
-    
+    jQuery.get('/favorites').done(function(data) {
+      var favoritesList;
+      if(typeof(data) !== 'object') {
+        favoritesList = JSON.parse(data)
+      } else {
+        favoritesList = data
+      }
+      var listHTML = favoritesList.reduce(function(previousValue, currentValue) {
+        return previousValue + "<li>" + currentValue.name + "</li>"
+      }, "")
+      $("#favorites>ul").html(listHTML)
+    })
   })
 })
