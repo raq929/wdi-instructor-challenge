@@ -65,7 +65,7 @@ var handleSearch = function handleSearch(event) {
   var formQuery = $('form').serialize();
   // this adds the options that don't depend on the form
   var fullQuery = formQuery + "&plot=short&r=json"
-  var searchRequest = jQuery.get("http://www.omdbapi.com/?" + fullQuery);
+  var searchRequest = jQuery.get("https://www.omdbapi.com/?" + fullQuery);
   var result = "";
 
   searchRequest.done(function(movieData) {
