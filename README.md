@@ -6,6 +6,10 @@
 
 This is a basic application that allows a user to search for movies in using the OMDb database, and to favorite those movies.
 
+###Deployed Site
+
+The site is deployed at https://ga-coding-challenge.herokuapp.com/
+
 ### Technologies
 
 This uses a Ruby/Sinatra backend that serves json to the front end. There is no real database, instead, the server writes to a .json file. The front end uses JavaScript and jQuery.
