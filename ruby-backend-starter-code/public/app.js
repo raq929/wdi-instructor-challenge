@@ -1,12 +1,33 @@
 var searchData;
-var favoritesList = []
 
-var isFavorite = function isFavorite(movie) {
+var isFavorite = function(favoritesList, movieData) {
   return favoritesList.some(function(favorite) {
-    console.log(favorite.Title)
-    return favorite.Title === movie.Title &&
-      favorite.Year === movie.Year
+      return favorite.name === movieData.Title
   })
+}
+
+var displaySearchResult = function displaySearchResult(movieData, basicMovieInfo) {
+  return jQuery.get('/favorites').done(function(data) {
+    var favoritesList;
+    if(typeof(data) !== 'object') {
+      favoritesList = JSON.parse(data)
+    } else {
+      favoritesList = data
+    }
+    console.log(favoritesList);
+    if (isFavorite(favoritesList, movieData)) {
+      result = basicMovieInfo + " <a>Favorited!</a>";
+    } else {
+      result = basicMovieInfo + " <a>Favorite</a>";
+    }
+  }).fail(function() {
+    console.log('fail')
+    result = basicMovieInfo
+    return false;
+  }).always(function() {
+    $('#result').html(result);
+    $('#result').on('click', handleMovieClick)
+  });
 }
 
 var handleMovieClick = function handleMovieClick(event) {
@@ -36,22 +57,17 @@ var handleSearch = function handleSearch(event) {
   event.preventDefault();
   var formQuery = $('form').serialize()
   var fullQuery = formQuery + "&plot=short&r=json"
-  var request = jQuery.get("http://www.omdbapi.com/?" + fullQuery)
+  var searchRequest = jQuery.get("http://www.omdbapi.com/?" + fullQuery)
   var result = ""
 
-  request.done(function(movieData) {
+  searchRequest.done(function(movieData) {
+    var basicMovieInfo = movieData.Title + "  " + movieData.Year;
     if(movieData.Response === "False") {
-      result = "Your movie could not be found."
+      result = "Your movie could not be found.";
     } else {
-      searchData = movieData
-      if (isFavorite(movieData)) {
-        result = movieData.Title + "  " + movieData.Year + " <a>UnFavorite</a>"
-      } else {
-        result = movieData.Title + "  " + movieData.Year + " <a>Favorite</a>"
-      }
+      searchData = movieData;
+      displaySearchResult(movieData, basicMovieInfo)
     }
-    $('#result').html(result);
-    $('#result').on('click', handleMovieClick)
   }).fail(function(error) {
     console.log(error)
     result = "There was an error contacting the server."
@@ -61,6 +77,28 @@ var handleSearch = function handleSearch(event) {
 
 // script does not run until the document is fully loaded
 $(document).ready(function(){
-  console.log('ready')
   $('form').on("submit", handleSearch);
+  $('#result').on('click', 'a', function(e) {
+    e.preventDefault()
+    var favoriteData = {
+      name: searchData.Title,
+      oid: searchData.Title + searchData.Year
+    }
+    jQuery.post('/favorites', favoriteData).done(function(data){
+      var newFavoritesList;
+      if(JSON.parse(data)) {
+        newFavoritesList = JSON.parse(data);
+      } else {
+        newFavoritesList = data
+      }
+      console.log('new favorites list', newFavoritesList)
+      if(isFavorite(newFavoritesList, searchData)){
+        $('#result>a').html(' Favorited!')
+      }
+    })
+  })
+  $('#favorites').on('click', function(e) {
+    e.preventDefault();
+    
+  })
 })
